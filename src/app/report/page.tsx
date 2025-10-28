@@ -1,13 +1,14 @@
-import { getLeads } from '@/lib/actions';
+import { getLeads, getSalesExecutives } from '@/lib/actions';
 import { CallReportForm } from '@/components/report/CallReportForm';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
 
 export default async function ReportPage() {
-  const { data: leads, error } = await getLeads();
+  const { data: leads, error: leadsError } = await getLeads();
+  const { data: salesExecutives, error: execError } = await getSalesExecutives();
 
-  if (error) {
-    return <div className="text-destructive text-center p-4">{error}</div>;
+  if (leadsError || execError) {
+    return <div className="text-destructive text-center p-4">{leadsError || execError}</div>;
   }
 
   return (
@@ -16,10 +17,10 @@ export default async function ReportPage() {
         <Card className="shadow-2xl bg-card/80 backdrop-blur-sm">
           <CardHeader className="text-center">
             <CardTitle className="font-headline text-3xl md:text-4xl text-primary">VoIP Sales Call Report</CardTitle>
-            <CardDescription className="text-lg">Log your daily sales activities here. <Link href="/admin" className="text-primary hover:underline">Go to Admin Dashboard</Link></CardDescription>
+            <CardDescription className="text-lg">Log your daily sales activities here. <Link href="/login" className="text-primary hover:underline">Go to Admin Login</Link></CardDescription>
           </CardHeader>
           <CardContent>
-            <CallReportForm leads={leads || []} />
+            <CallReportForm leads={leads || []} salesExecutives={salesExecutives || []} />
           </CardContent>
         </Card>
       </div>

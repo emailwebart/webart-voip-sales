@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
+import Link from 'next/link';
 
 export function DashboardHeader() {
 
@@ -22,6 +23,9 @@ export function DashboardHeader() {
           <Button variant="outline" size="sm" onClick={() => handleExport('PDF')}>
             <Download className="mr-2 h-4 w-4" />
             Export PDF
+          </Button>
+          <Button asChild size="sm">
+            <Link href="/report">Go to Report Form</Link>
           </Button>
         </div>
       </div>

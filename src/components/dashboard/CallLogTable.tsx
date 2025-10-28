@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Skeleton } from '../ui/skeleton';
 import { Badge } from '../ui/badge';
 
-type CallLogWithBusiness = CallLog & { business_name?: string };
+type CallLogWithDetails = CallLog & { business_name?: string, sales_exec_name?: string };
 
 const interestLevelVariant: { [key: string]: 'default' | 'secondary' | 'destructive' | 'outline' } = {
     'High': 'default',
@@ -19,19 +19,19 @@ const interestLevelVariant: { [key: string]: 'default' | 'secondary' | 'destruct
     'Not Interested': 'destructive',
 }
 
-export function CallLogTable({ data }: { data: CallLogWithBusiness[] }) {
+export function CallLogTable({ data }: { data: CallLogWithDetails[] }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [execFilter, setExecFilter] = useState('all');
     const [outcomeFilter, setOutcomeFilter] = useState('all');
 
-    const salesExecs = useMemo(() => ['all', ...Array.from(new Set(data.map(log => log.sales_exec_name)))], [data]);
+    const salesExecs = useMemo(() => ['all', ...Array.from(new Set(data.map(log => log.sales_exec_name).filter(Boolean) as string[]))], [data]);
     const outcomes = useMemo(() => ['all', ...Array.from(new Set(data.map(log => log.call_outcome)))], [data]);
 
     const filteredData = useMemo(() => {
         return data.filter(log => {
             const matchesSearch = searchTerm === '' ||
                 log.business_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                log.sales_exec_name.toLowerCase().includes(searchTerm.toLowerCase());
+                log.sales_exec_name?.toLowerCase().includes(searchTerm.toLowerCase());
             
             const matchesExec = execFilter === 'all' || log.sales_exec_name === execFilter;
             const matchesOutcome = outcomeFilter === 'all' || log.call_outcome === outcomeFilter;

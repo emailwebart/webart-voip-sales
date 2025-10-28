@@ -3,7 +3,7 @@ import { z } from 'zod';
 const requiredString = z.string().min(1, 'This field is required');
 
 export const callReportSchema = z.object({
-  sales_exec_name: requiredString,
+  sales_exec_id: requiredString,
   lead_type: z.enum(['New Lead', 'Existing Lead']),
   
   // New Lead Fields
@@ -11,7 +11,7 @@ export const callReportSchema = z.object({
   business_name: z.string().optional(),
   contact_name: z.string().optional(),
   contact_phone: z.string().optional(),
-  contact_email: z.string().email('Invalid email address').optional(),
+  contact_email: z.string().email('Invalid email address').optional().or(z.literal('')),
   industry: z.string().optional(),
   company_size: z.string().optional(),
   city: z.string().optional(),

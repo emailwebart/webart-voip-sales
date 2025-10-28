@@ -63,12 +63,14 @@ export default function AdminDashboardPage() {
 }
 
 async function StatsLoader() {
-  const { data: stats } = await getStatsForDashboard();
+  const { data: stats, error } = await getStatsForDashboard();
+  if (error) return <p className="text-destructive p-4">{error}</p>
   return <SummaryCards stats={stats} />;
 }
 
 async function ChartsLoader({ chart }: { chart: 'trend' | 'interest' | 'stage' }) {
-  const { data: chartData } = await getChartDataForDashboard();
+  const { data: chartData, error } = await getChartDataForDashboard();
+  if (error) return <p className="text-destructive p-4">{error}</p>
   if (chart === 'trend') return <CallTrendChart data={chartData?.dailyCallTrend} />;
   if (chart === 'interest') return <InterestLevelChart data={chartData?.interestLevelDistribution} />;
   if (chart === 'stage') return <LeadStageChart data={chartData?.leadStageDistribution} />;
@@ -76,6 +78,7 @@ async function ChartsLoader({ chart }: { chart: 'trend' | 'interest' | 'stage' }
 }
 
 async function CallLogsLoader() {
-    const { data: logs } = await getCallLogs();
+    const { data: logs, error } = await getCallLogs();
+    if (error) return <p className="text-destructive p-4">{error}</p>
     return <CallLogTable data={logs || []} />
 }
