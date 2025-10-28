@@ -20,14 +20,6 @@ import { submitCallReport } from '@/lib/actions';
 import { Switch } from '../ui/switch';
 import { useState } from 'react';
 
-const formSections = [
-  { name: 'Sales Executive Info', fields: ['sales_exec_name', 'lead_type'] },
-  { name: 'Lead Details', fields: ['lead_id', 'business_name', 'contact_name', 'contact_phone', 'contact_email', 'lead_source', 'industry', 'company_size', 'city'] },
-  { name: 'Call Details', fields: ['call_outcome', 'remarks'] },
-  { name: 'Connected Call Details', fields: ['service_pitched', 'interest_level', 'next_step_required', 'follow_up_date', 'remarks'] },
-  { name: 'Opportunity Progress', fields: ['lead_stage', 'demo_date', 'proposal_sent', 'deal_value'] },
-];
-
 const fieldOptions = {
   lead_source: ['LinkedIn', 'Cold Call', 'Referral', 'Website', 'Partner', 'Other'],
   industry: ['IT', 'Healthcare', 'Finance', 'Retail', 'Manufacturing', 'Other'],
@@ -132,7 +124,7 @@ export function CallReportForm({ leads }: { leads: Lead[] }) {
               <FormLabel>Select Lead</FormLabel>
               <Select onValueChange={field.onChange}>
                 <FormControl><SelectTrigger><SelectValue placeholder="Select an existing lead by business name" /></SelectTrigger></FormControl>
-                <SelectContent><>{leadOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}</ Odds-on Favorites</SelectContent>
+                <SelectContent>{leadOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}</SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
@@ -176,7 +168,7 @@ export function CallReportForm({ leads }: { leads: Lead[] }) {
                     <FormField control={form.control} name="proposal_sent" render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-8"><div className="space-y-0.5"><FormLabel>Proposal Sent?</FormLabel></div><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
                     )} />
-                    <FormField control={form.control} name="deal_value" render={({ field }) => (<FormItem><FormLabel>Estimated Deal Value (INR)</FormLabel><FormControl><Input type="number" placeholder="50000" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="deal_value" render={({ field }) => (<FormItem><FormLabel>Estimated Deal Value (INR)</FormLabel><FormControl><Input type="number" placeholder="50000" {...field} onChange={event => field.onChange(+event.target.value)} /></FormControl><FormMessage /></FormItem>)} />
                 </div>
             </div>
             
