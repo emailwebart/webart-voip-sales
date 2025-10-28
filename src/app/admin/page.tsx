@@ -27,7 +27,7 @@ export default async function AdminDashboardPage({
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <DashboardHeader />
+      <DashboardHeader from={from} to={to} />
       <DashboardFilters salesExecutives={(salesExecutives as SalesExecutive[]) || []} />
       
       <Suspense fallback={<SummaryCardsSkeleton />}>

@@ -25,7 +25,7 @@ export function SummaryCards({ stats }: { stats: DashboardStats | null }) {
   const formatCurrency = (value: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
 
   const cards: CardData[] = [
-    { title: 'Total Calls Today', value: stats.totalCalls.toString(), icon: 'totalCalls' },
+    { title: 'Total Calls', value: stats.totalCalls.toString(), icon: 'totalCalls' },
     { title: 'Connected Calls', value: stats.connectedCalls.toString(), icon: 'connectedCalls' },
     { title: 'New Leads Added', value: stats.newLeads.toString(), icon: 'newLeads' },
     { title: 'Demos Scheduled', value: stats.demosScheduled.toString(), icon: 'demosScheduled' },

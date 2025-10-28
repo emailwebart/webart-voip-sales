@@ -1,4 +1,4 @@
-import { addDays, format, startOfToday, subDays, eachDayOfInterval, isValid } from 'date-fns';
+import { addDays, format, startOfToday, subDays, eachDayOfInterval, isValid, endOfDay } from 'date-fns';
 import type { Lead, CallLog, DashboardStats, DailyCallTrend, ChartData, SalesExecutive, DashboardFilter } from './types';
 import { supabase } from './supabase/client';
 
@@ -68,6 +68,10 @@ export const getCallLogs = async (filters?: DashboardFilter): Promise<(CallLog &
 
 // --- Dashboard Analytics ---
 export const getDashboardStats = async (filters?: DashboardFilter): Promise<DashboardStats> => {
+  const today = startOfToday();
+  const endDate = filters?.to ? new Date(filters.to) : today;
+  const tomorrow = addDays(endOfDay(endDate), 1);
+
   let query = supabase.from('call_logs').select('*');
 
   if (filters?.from) query = query.gte('date', filters.from);
@@ -77,16 +81,13 @@ export const getDashboardStats = async (filters?: DashboardFilter): Promise<Dash
   const { data: callLogs, error } = await query;
   if (error) throw error;
 
-  const today = startOfToday();
-  const tomorrow = addDays(today, 1);
-
   const filteredLogs = callLogs;
 
-  const { data: allFollowUps, error: followUpError } = await supabase
+  const { count: followUpsDue, error: followUpError } = await supabase
     .from('call_logs')
-    .select('follow_up_date')
+    .select('id', { count: 'exact' })
     .eq('follow_up_date', format(tomorrow, 'yyyy-MM-dd'));
-
+  
   if(followUpError) throw followUpError;
 
   return {
@@ -98,7 +99,7 @@ export const getDashboardStats = async (filters?: DashboardFilter): Promise<Dash
     totalDealValue: filteredLogs
       .filter(l => l.lead_stage === 'Closed Won' && l.deal_value)
       .reduce((sum, l) => sum + Number(l.deal_value!), 0),
-    followUpsDue: allFollowUps.length
+    followUpsDue: followUpsDue ?? 0
   };
 };
 
