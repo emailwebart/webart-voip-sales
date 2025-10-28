@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache';
 import { addCallLog, addLead, getDailyCallTrend, getDailySummaryData, getDashboardStats, getInterestLevelDistribution, getLeadStageDistribution, getLeads as fetchLeads, getCallLogs as fetchCallLogs } from './data';
 import type { CallReportFormValues } from './schemas';
-import { generateDailySummaryEmailContent } from '@/ai/flows/daily-summary-email-content';
 
 export async function getLeads() {
   try {
@@ -99,16 +98,5 @@ export async function getChartDataForDashboard() {
         }
     } catch (e) {
         return { data: null, error: 'Failed to fetch chart data.' }
-    }
-}
-
-export async function generateAndPreviewDailyReport() {
-    try {
-        const summaryData = await getDailySummaryData();
-        const emailContent = await generateDailySummaryEmailContent(summaryData);
-        return { data: emailContent, error: null };
-    } catch (e) {
-        console.error(e);
-        return { data: null, error: 'Failed to generate daily report.' };
     }
 }

@@ -1,12 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Mail } from 'lucide-react';
-import { DailyReportDialog } from './DailyReportDialog';
+import { Download } from 'lucide-react';
 
 export function DashboardHeader() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleExport = (format: 'CSV' | 'PDF') => {
     console.log(`Exporting data as ${format}...`);
@@ -26,13 +23,8 @@ export function DashboardHeader() {
             <Download className="mr-2 h-4 w-4" />
             Export PDF
           </Button>
-          <Button size="sm" onClick={() => setIsDialogOpen(true)}>
-            <Mail className="mr-2 h-4 w-4" />
-            Generate Daily Report
-          </Button>
         </div>
       </div>
-      <DailyReportDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
     </>
   );
 }
