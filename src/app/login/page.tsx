@@ -31,12 +31,9 @@ export default function LoginPage() {
               </div>
               <Input id="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" asChild>
+              <Link href="/admin">Login</Link>
             </Button>
-            <p className="mt-4 text-center text-sm text-muted-foreground">
-              This is a mock login page. Click <Link href="/admin" className="font-semibold text-primary hover:underline">here</Link> to proceed to the admin dashboard.
-            </p>
           </div>
         </CardContent>
       </Card>
