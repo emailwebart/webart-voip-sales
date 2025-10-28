@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'VoIP Sales Insights',
+  title: 'WebArt Voip Sales Call Report',
   description: 'A smart VoIP Sales Call Reporting System',
 };
 

@@ -12,15 +12,12 @@ export function Logo({ className }: { className?: string }) {
         <Image
           src={logoImage.imageUrl}
           alt={logoImage.description}
-          width={25}
-          height={25}
+          width={120}
+          height={30}
           data-ai-hint={logoImage.imageHint}
-          className="rounded-md"
+          className="rounded-md object-contain"
         />
       )}
-      <span className="font-headline text-lg font-semibold text-primary">
-        VoIP Sales Insights
-      </span>
     </Link>
   );
 }

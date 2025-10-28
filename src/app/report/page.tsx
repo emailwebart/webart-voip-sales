@@ -16,8 +16,8 @@ export default async function ReportPage() {
       <div className="w-full max-w-4xl mx-auto">
         <Card className="shadow-2xl bg-card/80 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <CardTitle className="font-headline text-3xl md:text-4xl text-primary">VoIP Sales Call Report</CardTitle>
-            <CardDescription className="text-lg">Log your daily sales activities here. <Link href="/login" className="text-primary hover:underline">Go to Admin Login</Link></CardDescription>
+            <CardTitle className="font-headline text-3xl md:text-4xl text-primary">WebArt Voip Sales Call Report</CardTitle>
+            <CardDescription className="text-lg">Log your daily sales activities here.</CardDescription>
           </CardHeader>
           <CardContent>
             <CallReportForm leads={leads || []} salesExecutives={salesExecutives || []} />
