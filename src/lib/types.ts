@@ -66,3 +66,9 @@ export type ChartData = {
   name: string;
   value: number;
 }[];
+
+export type DashboardFilter = {
+  from?: string;
+  to?: string;
+  sales_exec_id?: string;
+}

@@ -1,8 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addCallLog, addLead, getDailyCallTrend, getDailySummaryData, getDashboardStats, getInterestLevelDistribution, getLeadStageDistribution, getLeads as fetchLeads, getCallLogs as fetchCallLogs, getSalesExecutives as fetchSalesExecutives } from './data';
+import { addCallLog, addLead, getDailyCallTrend, getDashboardStats, getInterestLevelDistribution, getLeadStageDistribution, getLeads as fetchLeads, getCallLogs as fetchCallLogs, getSalesExecutives as fetchSalesExecutives } from './data';
 import type { CallReportFormValues } from './schemas';
+import type { DashboardFilter } from './types';
 
 export async function getLeads() {
   try {
@@ -24,9 +25,9 @@ export async function getSalesExecutives() {
   }
 }
 
-export async function getCallLogs() {
+export async function getCallLogs(filters?: DashboardFilter) {
     try {
-        const logs = await fetchCallLogs();
+        const logs = await fetchCallLogs(filters);
         return { data: logs, error: null };
     } catch (error) {
         console.error('Error fetching call logs:', error);
@@ -85,9 +86,9 @@ export async function submitCallReport(values: CallReportFormValues) {
   }
 }
 
-export async function getStatsForDashboard() {
+export async function getStatsForDashboard(filters?: DashboardFilter) {
     try {
-        const data = await getDashboardStats();
+        const data = await getDashboardStats(filters);
         return { data, error: null };
     } catch(e) {
         console.error('Error fetching dashboard stats:', e);
@@ -95,16 +96,16 @@ export async function getStatsForDashboard() {
     }
 }
 
-export async function getChartDataForDashboard() {
+export async function getChartDataForDashboard(filters?: DashboardFilter) {
     try {
         const [
             dailyCallTrend,
             interestLevelDistribution,
             leadStageDistribution,
         ] = await Promise.all([
-            getDailyCallTrend(),
-            getInterestLevelDistribution(),
-            getLeadStageDistribution(),
+            getDailyCallTrend(filters),
+            getInterestLevelDistribution(filters),
+            getLeadStageDistribution(filters),
         ]);
         return {
             data: {

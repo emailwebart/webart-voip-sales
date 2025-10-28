@@ -1,5 +1,5 @@
-import { addDays, format, startOfToday, subDays } from 'date-fns';
-import type { Lead, CallLog, DashboardStats, DailyCallTrend, ChartData, SalesExecutive } from './types';
+import { addDays, format, startOfToday, subDays, eachDayOfInterval, isValid } from 'date-fns';
+import type { Lead, CallLog, DashboardStats, DailyCallTrend, ChartData, SalesExecutive, DashboardFilter } from './types';
 import { supabase } from './supabase/client';
 
 
@@ -39,8 +39,8 @@ export const addCallLog = async (logData: Omit<CallLog, 'id' | 'created_at' | 'd
     return data;
 };
 
-export const getCallLogs = async (): Promise<(CallLog & { leads: { business_name: string }, sales_executives: { name: string } })[]> => {
-    const { data, error } = await supabase
+export const getCallLogs = async (filters?: DashboardFilter): Promise<(CallLog & { leads: { business_name: string }, sales_executives: { name: string } })[]> => {
+    let query = supabase
         .from('call_logs')
         .select(`
             *,
@@ -48,6 +48,12 @@ export const getCallLogs = async (): Promise<(CallLog & { leads: { business_name
             sales_executives (name)
         `)
         .order('created_at', { ascending: false });
+    
+    if (filters?.from) query = query.gte('date', filters.from);
+    if (filters?.to) query = query.lte('date', filters.to);
+    if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
+
+    const { data, error } = await query;
 
     if (error) throw error;
 
@@ -61,53 +67,84 @@ export const getCallLogs = async (): Promise<(CallLog & { leads: { business_name
 
 
 // --- Dashboard Analytics ---
-const isToday = (date: string) => format(new Date(date), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+export const getDashboardStats = async (filters?: DashboardFilter): Promise<DashboardStats> => {
+  let query = supabase.from('call_logs').select('*');
 
-export const getDashboardStats = async (): Promise<DashboardStats> => {
-  const { data: callLogs, error } = await supabase.from('call_logs').select('*');
+  if (filters?.from) query = query.gte('date', filters.from);
+  if (filters?.to) query = query.lte('date', filters.to);
+  if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
+
+  const { data: callLogs, error } = await query;
   if (error) throw error;
 
-  const todayLogs = callLogs.filter(log => isToday(log.date));
-  const tomorrow = addDays(new Date(), 1);
+  const today = startOfToday();
+  const tomorrow = addDays(today, 1);
+
+  const filteredLogs = callLogs;
+
+  const { data: allFollowUps, error: followUpError } = await supabase
+    .from('call_logs')
+    .select('follow_up_date')
+    .eq('follow_up_date', format(tomorrow, 'yyyy-MM-dd'));
+
+  if(followUpError) throw followUpError;
 
   return {
-    totalCalls: todayLogs.length,
-    connectedCalls: todayLogs.filter(l => l.call_outcome === 'Connected').length,
-    newLeads: todayLogs.filter(l => l.lead_type === 'New Lead').length,
-    demosScheduled: todayLogs.filter(l => l.lead_stage === 'Demo Scheduled').length,
-    dealsClosed: todayLogs.filter(l => l.lead_stage === 'Closed Won').length,
-    totalDealValue: todayLogs
+    totalCalls: filteredLogs.length,
+    connectedCalls: filteredLogs.filter(l => l.call_outcome === 'Connected').length,
+    newLeads: filteredLogs.filter(l => l.lead_type === 'New Lead').length,
+    demosScheduled: filteredLogs.filter(l => l.lead_stage === 'Demo Scheduled').length,
+    dealsClosed: filteredLogs.filter(l => l.lead_stage === 'Closed Won').length,
+    totalDealValue: filteredLogs
       .filter(l => l.lead_stage === 'Closed Won' && l.deal_value)
       .reduce((sum, l) => sum + Number(l.deal_value!), 0),
-    followUpsDue: callLogs.filter(l => l.follow_up_date && format(new Date(l.follow_up_date), 'yyyy-MM-dd') === format(tomorrow, 'yyyy-MM-dd')).length
+    followUpsDue: allFollowUps.length
   };
 };
 
-export const getDailyCallTrend = async (): Promise<DailyCallTrend> => {
-    const { data: callLogs, error } = await supabase.from('call_logs').select('date, call_outcome');
+export const getDailyCallTrend = async (filters?: DashboardFilter): Promise<DailyCallTrend> => {
+    let query = supabase.from('call_logs').select('date, call_outcome');
+    if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
+
+    const fromDate = filters?.from ? new Date(filters.from) : subDays(new Date(), 6);
+    const toDate = filters?.to ? new Date(filters.to) : new Date();
+
+    if (!isValid(fromDate) || !isValid(toDate)) {
+      return [];
+    }
+
+    const dateRange = eachDayOfInterval({ start: fromDate, end: toDate });
+    
+    query = query.gte('date', format(fromDate, 'yyyy-MM-dd')).lte('date', format(toDate, 'yyyy-MM-dd'));
+
+    const { data: callLogs, error } = await query;
     if (error) throw error;
 
-    const trend: DailyCallTrend = [];
-    for (let i = 6; i >= 0; i--) {
-        const date = subDays(new Date(), i);
+    const trend = dateRange.map(date => {
         const dateStr = format(date, 'MMM d');
         const logsOnDate = callLogs.filter(log => format(new Date(log.date), 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd'));
-        trend.push({
+        return {
             date: dateStr,
             total: logsOnDate.length,
             connected: logsOnDate.filter(l => l.call_outcome === 'Connected').length
-        });
-    }
+        };
+    });
+    
     return trend;
 }
 
-export const getInterestLevelDistribution = async (): Promise<ChartData> => {
-    const { data: callLogs, error } = await supabase.from('call_logs').select('interest_level');
+export const getInterestLevelDistribution = async (filters?: DashboardFilter): Promise<ChartData> => {
+    let query = supabase.from('call_logs').select('interest_level');
+    
+    if (filters?.from) query = query.gte('date', filters.from);
+    if (filters?.to) query = query.lte('date', filters.to);
+    if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
+    
+    const { data: callLogs, error } = await query;
     if (error) throw error;
 
-    const todayLogs = callLogs.filter(log => isToday(log.created_at));
     const distribution: { [key: string]: number } = {};
-    todayLogs.forEach(log => {
+    callLogs.forEach(log => {
         if (log.interest_level) {
             distribution[log.interest_level] = (distribution[log.interest_level] || 0) + 1;
         }
@@ -115,13 +152,18 @@ export const getInterestLevelDistribution = async (): Promise<ChartData> => {
     return Object.entries(distribution).map(([name, value]) => ({ name, value }));
 }
 
-export const getLeadStageDistribution = async (): Promise<ChartData> => {
-    const { data: callLogs, error } = await supabase.from('call_logs').select('lead_stage');
+export const getLeadStageDistribution = async (filters?: DashboardFilter): Promise<ChartData> => {
+    let query = supabase.from('call_logs').select('lead_stage');
+
+    if (filters?.from) query = query.gte('date', filters.from);
+    if (filters?.to) query = query.lte('date', filters.to);
+    if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
+
+    const { data: callLogs, error } = await query;
     if (error) throw error;
 
-    const todayLogs = callLogs.filter(log => isToday(log.created_at));
     const distribution: { [key: string]: number } = {};
-    todayLogs.forEach(log => {
+    callLogs.forEach(log => {
         if (log.lead_stage) {
             distribution[log.lead_stage] = (distribution[log.lead_stage] || 0) + 1;
         }
