@@ -33,15 +33,16 @@ export function AdminSidebar() {
             <SidebarMenu>
             {menuItems.map(item => (
                 <SidebarMenuItem key={item.label}>
-                    <Link href={item.href} legacyBehavior passHref>
-                        <SidebarMenuButton 
-                            isActive={pathname === item.href}
-                            tooltip={item.label}
-                        >
+                    <SidebarMenuButton 
+                        asChild
+                        isActive={pathname === item.href}
+                        tooltip={item.label}
+                    >
+                        <Link href={item.href}>
                             <item.icon />
                             <span>{item.label}</span>
-                        </SidebarMenuButton>
-                    </Link>
+                        </Link>
+                    </SidebarMenuButton>
                 </SidebarMenuItem>
             ))}
             </SidebarMenu>
@@ -61,12 +62,12 @@ export function AdminSidebar() {
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <Link href="/report" legacyBehavior passHref>
-                        <SidebarMenuButton tooltip="Logout">
+                    <SidebarMenuButton asChild tooltip="Logout">
+                        <Link href="/report">
                             <LogOut />
                             <span>Logout</span>
-                        </SidebarMenuButton>
-                    </Link>
+                        </Link>
+                    </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
             <div className="mt-4 border-t border-border pt-4 flex items-center gap-3">
