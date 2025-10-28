@@ -31,7 +31,7 @@ export const addLead = async (leadData: Omit<Lead, 'id' | 'created_at'>): Promis
 export const addCallLog = async (logData: Omit<CallLog, 'id' | 'created_at' | 'date'>): Promise<CallLog> => {
     const { data, error } = await supabase
         .from('call_logs')
-        .insert([logData])
+        .insert([{ ...logData, date: new Date().toISOString() }])
         .select()
         .single();
 
@@ -50,7 +50,7 @@ export const getCallLogs = async (filters?: DashboardFilter): Promise<(CallLog &
         .order('created_at', { ascending: false });
     
     if (filters?.from) query = query.gte('date', filters.from);
-    if (filters?.to) query = query.lte('date', filters.to);
+    if (filters?.to) query = query.lte('date', endOfDay(new Date(filters.to)).toISOString());
     if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
 
     const { data, error } = await query;
@@ -75,7 +75,7 @@ export const getDashboardStats = async (filters?: DashboardFilter): Promise<Dash
   let query = supabase.from('call_logs').select('*');
 
   if (filters?.from) query = query.gte('date', filters.from);
-  if (filters?.to) query = query.lte('date', filters.to);
+  if (filters?.to) query = query.lte('date', endOfDay(new Date(filters.to)).toISOString());
   if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
 
   const { data: callLogs, error } = await query;
@@ -116,7 +116,7 @@ export const getDailyCallTrend = async (filters?: DashboardFilter): Promise<Dail
 
     const dateRange = eachDayOfInterval({ start: fromDate, end: toDate });
     
-    query = query.gte('date', format(fromDate, 'yyyy-MM-dd')).lte('date', format(toDate, 'yyyy-MM-dd'));
+    query = query.gte('date', format(fromDate, 'yyyy-MM-dd')).lte('date', endOfDay(toDate).toISOString());
 
     const { data: callLogs, error } = await query;
     if (error) throw error;
@@ -138,7 +138,7 @@ export const getInterestLevelDistribution = async (filters?: DashboardFilter): P
     let query = supabase.from('call_logs').select('interest_level');
     
     if (filters?.from) query = query.gte('date', filters.from);
-    if (filters?.to) query = query.lte('date', filters.to);
+    if (filters?.to) query = query.lte('date', endOfDay(new Date(filters.to)).toISOString());
     if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
     
     const { data: callLogs, error } = await query;
@@ -157,13 +157,13 @@ export const getLeadStageDistribution = async (filters?: DashboardFilter): Promi
     let query = supabase.from('call_logs').select('lead_stage');
 
     if (filters?.from) query = query.gte('date', filters.from);
-    if (filters?.to) query = query.lte('date', filters.to);
+    if (filters?.to) query = query.lte('date', endOfDay(new Date(filters.to)).toISOString());
     if (filters?.sales_exec_id) query = query.eq('sales_exec_id', filters.sales_exec_id);
 
     const { data: callLogs, error } = await query;
     if (error) throw error;
 
-    const distribution: { [key: string]: number } = {};
+    const distribution: { [key:string]: number } = {};
     callLogs.forEach(log => {
         if (log.lead_stage) {
             distribution[log.lead_stage] = (distribution[log.lead_stage] || 0) + 1;

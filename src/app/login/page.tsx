@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/shared/Logo';
+import { login } from '@/lib/auth-actions';
 
 export default function LoginPage() {
   return (
@@ -17,10 +18,10 @@ export default function LoginPage() {
           <CardDescription>Enter your credentials to access the dashboard</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <form action={login} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="admin@example.com" required />
+              <Input id="email" name="email" type="email" placeholder="admin@example.com" required />
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
@@ -29,12 +30,12 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required />
+              <Input id="password" name="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full" asChild>
-              <Link href="/admin">Login</Link>
+            <Button type="submit" className="w-full">
+              Login
             </Button>
-          </div>
+          </form>
         </CardContent>
       </Card>
     </div>

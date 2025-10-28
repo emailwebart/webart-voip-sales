@@ -9,11 +9,12 @@ import {
   SidebarMenuButton,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Bell, Home, LineChart, LogOut, Settings, BarChart, PieChart } from 'lucide-react';
+import { Bell, Home, LineChart, LogOut, Settings, BarChart } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Logo } from '../shared/Logo';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { logout } from '@/lib/auth-actions';
 
 const menuItems = [
     { href: '/admin', label: 'Dashboard', icon: Home },
@@ -61,13 +62,13 @@ export function AdminSidebar() {
                         <span>Settings</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Logout">
-                        <Link href="/report">
+                 <SidebarMenuItem>
+                    <form action={logout}>
+                        <SidebarMenuButton tooltip="Logout" className="w-full">
                             <LogOut />
                             <span>Logout</span>
-                        </Link>
-                    </SidebarMenuButton>
+                        </SidebarMenuButton>
+                    </form>
                 </SidebarMenuItem>
             </SidebarMenu>
             <div className="mt-4 border-t border-border pt-4 flex items-center gap-3">
