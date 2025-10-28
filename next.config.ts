@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'webart.technology',
+        port: '',
+        pathname: '/**',
+      }
     ],
   },
 };
