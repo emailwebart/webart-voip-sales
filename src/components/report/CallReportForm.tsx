@@ -147,7 +147,7 @@ export function CallReportForm({ leads, salesExecutives }: { leads: Lead[], sale
         ) : (
           <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
             <AccordionItem value="item-1" className="border-none">
-                <AccordionTrigger className="text-xl font-headline text-primary flex w-full justify-start rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+                <AccordionTrigger className="text-xl font-headline text-primary flex w-full justify-start rounded-lg border bg-card p-6 text-card-foreground shadow-sm no-underline hover:no-underline">
                     Add New Lead Details
                 </AccordionTrigger>
                 <AccordionContent>
