@@ -149,7 +149,7 @@ export function CallReportForm({ leads, salesExecutives }: { leads: Lead[], sale
             <AccordionItem value="item-1">
                 <AccordionTrigger className="text-xl font-headline text-primary">Add New Lead Details</AccordionTrigger>
                 <AccordionContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                     <FormField control={form.control} name="business_name" render={({ field }) => (<FormItem><FormLabel>Business Name</FormLabel><FormControl><Input placeholder="Acme Inc." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="contact_name" render={({ field }) => (<FormItem><FormLabel>Contact Person</FormLabel><FormControl><Input placeholder="Jane Smith" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="contact_phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl><FormMessage /></FormItem>)} />
