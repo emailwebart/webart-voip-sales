@@ -146,19 +146,23 @@ export function CallReportForm({ leads, salesExecutives }: { leads: Lead[], sale
           </Card>
         ) : (
           <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
-            <AccordionItem value="item-1">
-                <AccordionTrigger className="text-xl font-headline text-primary">Add New Lead Details</AccordionTrigger>
+            <AccordionItem value="item-1" className="border-none">
+                <AccordionTrigger className="text-xl font-headline text-primary flex w-full justify-start rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+                    Add New Lead Details
+                </AccordionTrigger>
                 <AccordionContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                    <FormField control={form.control} name="business_name" render={({ field }) => (<FormItem><FormLabel>Business Name</FormLabel><FormControl><Input placeholder="Acme Inc." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="contact_name" render={({ field }) => (<FormItem><FormLabel>Contact Person</FormLabel><FormControl><Input placeholder="Jane Smith" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="contact_phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="contact_email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="jane.smith@acme.com" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="city" render={({ field }) => (<FormItem><FormLabel>City / Location</FormLabel><FormControl><Input placeholder="San Francisco" {...field} value={field.value ?? ''}/></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="lead_source" render={({ field }) => (<FormItem><FormLabel>Lead Source</FormLabel><Select onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger></FormControl><SelectContent>{fieldOptions.lead_source.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="industry" render={({ field }) => (<FormItem><FormLabel>Industry</FormLabel><Select onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger></FormControl><SelectContent>{fieldOptions.industry.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="company_size" render={({ field }) => (<FormItem><FormLabel>Company Size</FormLabel><Select onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger></FormControl><SelectContent>{fieldOptions.company_size.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-                  </div>
+                    <Card className="rounded-t-none border-t-0">
+                        <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField control={form.control} name="business_name" render={({ field }) => (<FormItem><FormLabel>Business Name</FormLabel><FormControl><Input placeholder="Acme Inc." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="contact_name" render={({ field }) => (<FormItem><FormLabel>Contact Person</FormLabel><FormControl><Input placeholder="Jane Smith" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="contact_phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="contact_email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="jane.smith@acme.com" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="city" render={({ field }) => (<FormItem><FormLabel>City / Location</FormLabel><FormControl><Input placeholder="San Francisco" {...field} value={field.value ?? ''}/></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="lead_source" render={({ field }) => (<FormItem><FormLabel>Lead Source</FormLabel><Select onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger></FormControl><SelectContent>{fieldOptions.lead_source.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="industry" render={({ field }) => (<FormItem><FormLabel>Industry</FormLabel><Select onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder="Select industry" /></SelectTrigger></FormControl><SelectContent>{fieldOptions.industry.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="company_size" render={({ field }) => (<FormItem><FormLabel>Company Size</FormLabel><Select onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger></FormControl><SelectContent>{fieldOptions.company_size.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                        </CardContent>
+                    </Card>
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
