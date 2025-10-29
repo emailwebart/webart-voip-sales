@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { addCallLog, addLead, getDailyCallTrend, getDashboardStats, getInterestLevelDistribution, getLeadStageDistribution, getLeads as fetchLeads, getCallLogs as fetchCallLogs, getSalesExecutives as fetchSalesExecutives } from './data';
 import type { CallReportFormValues } from './schemas';
 import type { DashboardFilter } from './types';
-import { generateDailySummaryEmailContent } from '@/ai/flows/daily-summary-email-content';
 
 export async function getLeads() {
   try {
@@ -119,47 +118,5 @@ export async function getChartDataForDashboard(filters?: DashboardFilter) {
     } catch (e) {
         console.error('Error fetching chart data:', e);
         return { data: null, error: 'Failed to fetch chart data.' }
-    }
-}
-
-export async function generateAndPreviewDailyReport() {
-    try {
-        const today = new Date().toISOString().split('T')[0];
-        const stats = await getDashboardStats({ from: today, to: today });
-        const callLogs = await fetchCallLogs({ from: today, to: today });
-
-        if (!stats || callLogs.length === 0) {
-            return { data: null, error: "No data for today's report." };
-        }
-
-        const latestCall = callLogs[0];
-        const salesExec = await fetchSalesExecutives();
-        const execName = salesExec.find(e => e.id === latestCall.sales_exec_id)?.name || 'N/A';
-        const lead = await fetchLeads();
-        const leadName = lead.find(l => l.id === latestCall.lead_id)?.business_name || 'N/A';
-
-        const input = {
-            date: new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }),
-            totalCalls: stats.totalCalls,
-            connectedCalls: stats.connectedCalls,
-            newLeadsAdded: stats.newLeads,
-            demosScheduled: stats.demosScheduled,
-            dealsClosed: stats.dealsClosed,
-            totalDealValue: stats.totalDealValue,
-            followUpsSet: stats.followUpsDue,
-            salesExecName: execName,
-            businessName: leadName,
-            interestLevel: latestCall.interest_level || 'N/A',
-            leadStage: latestCall.lead_stage || 'N/A',
-            followUpDate: latestCall.follow_up_date || 'N/A',
-        };
-
-        const reportContent = await generateDailySummaryEmailContent(input);
-
-        return { data: reportContent, error: null };
-    } catch (error) {
-        console.error('Error generating daily report:', error);
-        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-        return { data: null, error: `Failed to generate report: ${errorMessage}` };
     }
 }
