@@ -23,8 +23,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 const fieldOptions = {
-  lead_source: ['LinkedIn', 'Cold Call', 'Referral', 'Website', 'Partner', 'Other'],
-  industry: ['IT', 'Healthcare', 'Finance', 'Retail', 'Manufacturing', 'Other'],
+  lead_source: ['LinkedIn', 'Cold Call', 'Referral', 'Website', 'Partner', 'Walk-in', 'Other'],
+  industry: ['IT', 'Healthcare', 'Finance', 'Retail', 'Manufacturing', 'BPO', 'Other'],
   company_size: ['1-10', '11-50', '51-200', '201-500', '500+'],
   call_outcome: ['Connected', 'Not Connected', 'Wrong Number', 'Call Back Later'],
   service_pitched: ['Cloud PBX', 'SIP Trunk', 'Hosted VoIP', 'UCaaS', 'Call Center', 'Other'],
